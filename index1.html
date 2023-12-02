@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WRDSS - Saved Data</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Agency FB', sans-serif;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 80%;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: black;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>WHITE ROOM DAILY SALARY SYSTEM RANKINGS</h1>
+
+    <table>
+        <tr>
+            <th>PLACE</th>
+            <th>NAME</th>
+            <th>DOPAMIN BALLS</th>
+        </tr>
+        <tr>
+            <!-- Display saved name and score from the server -->
+            <td id="place"></td>
+            <td id="savedName"></td>
+            <td id="savedScore"></td>
+        </tr>
+    </table>
+
+    <script>
+        // Load the saved score and name from the server
+        window.onload = function () {
+            // Fetch data from the server
+            fetch('http://localhost:3000/api/ranking')
+                .then(response => response.json())
+                .then(data => {
+                    // Filter data based on the 24-hour rule
+                    var currentTime = new Date().getTime();
+                    var filteredData = data.filter(function(entry) {
+                        return (currentTime - entry.timestamp) < 24 * 60 * 60 * 1000;
+                    });
+
+                    // Sort the filtered data by score in descending order
+                    var sortedData = filteredData.sort((a, b) => b.score - a.score);
+
+                    // Display the first entry (highest score) in the table
+                    if (sortedData.length > 0) {
+                        document.getElementById("place").innerHTML = "#1";
+                        document.getElementById("savedName").innerHTML = sortedData[0].name;
+                        document.getElementById("savedScore").innerHTML = sortedData[0].score;
+                    }
+                })
+                .catch(error => console.error(error));
+        };
+    </script>
+
+</body>
+</html>
+

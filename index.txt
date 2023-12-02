@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WRDSS</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Agency FB', sans-serif;
+        }
+
+        button {
+            margin: 5px;
+            background-color: black;
+            color: white;
+            border: 1px solid white;
+            padding: 10px;
+            cursor: pointer;
+            width: 350px;
+            height: 46px;
+            font-size: 20px;
+        }
+
+        button:hover {
+            background-color: white;
+            color: black;
+            border: 3px solid black;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 80%;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: black;
+            color: white;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>WHITE ROOM DAILY SALARY SYSTEM</h1>
+    <h2>DOPAMINE BALLS: <span id="number">100</span></h2>
+
+    <button onclick="updateNumber(-20)">SOCIAL MEDIA FOR 10 MIN (-20)</button><br>
+    <button onclick="updateNumber(-30)">SCROLL (-30)</button><br>
+    <button onclick="updateNumber(-60)">FAP (-60)</button><br>
+    <button onclick="updateNumber(-20)">VIDEO GAMES FOR 10 MIN (-20)</button><br>
+    <button onclick="updateNumber(-50)">ALCOHOL OR DRUGS (-50)</button><br>
+    <button onclick="updateNumber(-10)">DESSERT OR SWEETS (-10)</button><br>
+    <button onclick="updateNumber(5)">RUN (+5)</button><br>
+    <button onclick="updateNumber(5)">COLD SHOWER (+5)</button><br>
+    <button onclick="updateNumber(3)">WORKOUT(+3)</button><br>
+    <button onclick="updateNumber(1)">STRETCH (+1)</button><br>
+    <button onclick="updateNumber(2)">MEDITATE(+2)</button><br>
+
+    <button onclick="resetNumber()">RESET</button><br>
+
+    <h2>ADD SCORE</h2>
+    <table>
+        <tr>
+            <th>NAME</th>
+            <th>DOPAMINE BALLS</th>
+        </tr>
+        <tr>
+            <td><input type="text" id="nameInput" placeholder="Your Name"></td>
+            <td><span id="score">100</span></td>
+        </tr>
+    </table>
+
+    <!-- Add Save button -->
+    <button onclick="saveToServer()">SAVE</button>
+
+    <!-- Add button to navigate to a new page -->
+    <button onclick="navigateToNewPage()">SCOREBOARD</button>
+
+    <script>
+        function saveToServer() {
+            var nameInput = document.getElementById("nameInput").value;
+            var currentNumber = document.getElementById("number").innerHTML;
+
+            // Check if the name has at least 3 characters
+            if (nameInput.length >= 3) {
+                // Check if the number is within the valid range [0, 150]
+                if (currentNumber >= 0 && currentNumber <= 150) {
+                    // Send a POST request to the server to save the data
+                    fetch('http://localhost:3000/api/save', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ name: nameInput, score: currentNumber })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert("Data saved successfully!");
+                            // Refresh the ranking display after saving
+                            displayRanking();
+                        } else {
+                            alert("Server error: " + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert("Failed to save data. Please try again.");
+                        console.error(error);
+                    });
+                } else {
+                    alert("Might be suspected to have cheated. Please be truthful or message koji_wr!");
+                }
+            } else {
+                alert("Name must have at least 3 characters.");
+            }
+        }
+
+        function updateNumber(value) {
+            var numberElement = document.getElementById("number");
+            var currentNumber = parseInt(numberElement.innerHTML);
+            var newNumber = currentNumber + value;
+
+            // Check if the new number is within the valid range [0, 150]
+            if (newNumber >= 0 && newNumber <= 150) {
+                numberElement.innerHTML = newNumber;
+
+                // Update the score in the scoreboard
+                document.getElementById("score").innerHTML = newNumber;
+            }
+            // You can add an alert or other feedback if the number is outside the valid range
+        }
+
+        function resetNumber() {
+            // Ask for confirmation before resetting
+            var confirmed = window.confirm("Are you sure you want to reset?");
+            
+            if (confirmed) {
+                document.getElementById("number").innerHTML = "100";
+                document.getElementById("score").innerHTML = "100";
+                document.getElementById("nameInput").value = "";
+            }
+        }
+
+        // Function to navigate to a new page
+        function navigateToNewPage() {
+            // You can change the URL to the desired new page
+            window.location.href = "index1.html";
+        }
+    </script>
+
+</body>
+</html>
+
+
+
+
+
